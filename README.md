@@ -6,13 +6,7 @@ This repository implements a denoising neural network for audio processing. The 
 
 ## Setup
 
-Ensure you have the required dependencies installed. Use the following command to install dependencies if a `requirements.txt` file is available:
-
-```bash
-pip install -r requirements.txt
-```
-
-You need Python 3.x and PyTorch installed.
+You need Python 3.x, PyTorch, NumPy and Librosa installed.
 
 ---
 
