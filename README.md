@@ -1,6 +1,6 @@
 # Denoise Network
 
-This repository implements a denoising neural network for audio processing. The system includes functionality for augmenting audio data, training models, and evaluating the denoising performance.
+This repository implements a denoising neural network for audio processing. The system includes functionality for augmenting audio data of choice (See the [ESC-50](https://github.com/karolpiczak/ESC-50) environmental noise dataset submodule), training one of two UNet architectures, and evaluating the denoising performance.
 
 ---
 
