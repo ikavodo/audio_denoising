@@ -45,7 +45,7 @@ python train.py --train_dir ./ESC-50/augmented/ --test_dir ./ESC-50/audio/ --tra
 - `--test_labels`: Path to the labels for the test data.
 - `--model_type`: Specify which model to train (`small` or `large`).
 
-The script will train the denoising network and save the model to `model.pth` by default.
+The script will train the denoising network and save the model to `model.pth` by default. Notice it will also use a GPU if one such is available.
 
 ---
 
