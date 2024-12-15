@@ -14,7 +14,7 @@ You need Python 3.x, PyTorch, NumPy and Librosa installed.
 
 ### **1. Augment Audio Data**
 
-To augment audio files located in a directory (e.g., `ESC-50/audio/`), use the following command:
+To augment audio files located in a directory (e.g., `ESC-50/audio/`), use the following command from inside the source code directory:
 
 ```bash
 python augmentation.py --audio_dir ./ESC-50/audio/ --output_dir ./ESC-50/augmented/ --N 5 --noise_path ./background_noise.wav
