@@ -23,7 +23,7 @@ You need Python 3.x and PyTorch installed.
 To augment audio files located in a directory (e.g., `ESC-50/audio/`), use the following command:
 
 ```bash
-python augment.py --audio_dir ./ESC-50/audio/ --output_dir ./ESC-50/augmented/ --N 5 --noise_path ./background_noise.wav
+python augmentation.py --audio_dir ./ESC-50/audio/ --output_dir ./ESC-50/augmented/ --N 5 --noise_path ./background_noise.wav
 ```
 
 #### Arguments:
