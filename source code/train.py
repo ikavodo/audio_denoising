@@ -1,8 +1,6 @@
-import os
 import argparse
 import torch
 import torch.nn as nn
-import matplotlib.pyplot as plt
 from torch.utils.data import DataLoader
 from CustomDataset import CustomDataset  # Assuming you have this dataset class
 from Model import Model
@@ -98,42 +96,39 @@ def main():
         if loss_test == min(test_loss):
             torch.save(model.cpu().state_dict(), args.save_path)
 
-        # Move model back to GPU
-        model.cuda()
-
         # Visualize the training and test loss after every epoch
-        plot_loss(train_loss, test_loss, args.plot_path)
+        # plot_loss(train_loss, test_loss, args.plot_path)
 
     # End of training
     print("Training complete.")
 
-
-def plot_loss(training_loss, test_loss, plot_path):
-    """ Visualize and save the training and test loss plot """
-    fig, ax = plt.subplots(1)
-
-    # Convert losses to NumPy arrays for plotting
-    training_vis = [torch.Tensor([t]).cpu().detach().numpy() for t in training_loss]
-    test_vis = [torch.Tensor([t]).cpu().detach().numpy() for t in test_loss]
-
-    # Get minimum test loss
-    test_min = min(test_vis)
-
-    # Plotting
-    ax.axhline(y=test_min, linestyle='--', color='r')  # Line for minimum test loss
-    ax.set_yscale('log')  # Set log scale for y-axis
-    ax.plot(training_vis, label='Train Error')
-    ax.plot(test_vis, label='Test Error')
-
-    # Labeling
-    ax.set_title("Training vs Test Loss")
-    ax.set_xlabel("Epochs")
-    ax.set_ylabel("Loss")
-    ax.legend()
-
-    # Save plot as an image file
-    plt.savefig(plot_path)
-    plt.close()
+#
+# def plot_loss(training_loss, test_loss, plot_path):
+#     """ Visualize and save the training and test loss plot """
+#     fig, ax = plt.subplots(1)
+#
+#     # Convert losses to NumPy arrays for plotting
+#     training_vis = [torch.Tensor([t]).cpu().detach().numpy() for t in training_loss]
+#     test_vis = [torch.Tensor([t]).cpu().detach().numpy() for t in test_loss]
+#
+#     # Get minimum test loss
+#     test_min = min(test_vis)
+#
+#     # Plotting
+#     ax.axhline(y=test_min, linestyle='--', color='r')  # Line for minimum test loss
+#     ax.set_yscale('log')  # Set log scale for y-axis
+#     ax.plot(training_vis, label='Train Error')
+#     ax.plot(test_vis, label='Test Error')
+#
+#     # Labeling
+#     ax.set_title("Training vs Test Loss")
+#     ax.set_xlabel("Epochs")
+#     ax.set_ylabel("Loss")
+#     ax.legend()
+#
+#     # Save plot as an image file
+#     plt.savefig(plot_path)
+#     plt.close()
 
 
 if __name__ == "__main__":

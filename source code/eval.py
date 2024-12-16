@@ -5,7 +5,7 @@ import soundfile as sf
 import librosa
 from smallModel import smallModel  # Import your small model class
 from Model import Model  # Import your large model class
-from util import prepareSample  # Assuming you have a function to prepare the sample
+from util import prepareSample # Assuming you have a function to prepare the sample
 
 
 # Define the main function
@@ -39,7 +39,7 @@ def main():
         audio_path = os.path.join(args.audio_dir, audio_file)
 
         # Only process audio files (skip non-audio files)
-        if not audio_file.endswith(('.wav', '.ogg')):
+        if not audio_file.endswith(('.wav')):
             continue
 
         print(f"Processing {audio_file}...")
@@ -67,6 +67,23 @@ def main():
         sf.write(denoised_out_path, denoised.numpy(), fs)
         print(f"Saved denoised audio to {denoised_out_path}")
 
+        # n_fft = 2048
+        # stfts = forSNR(denoised_out_path, n_fft)
+        # snr1 = compute_segSNR(stfts[0], stfts[1])
+        #
+        # fig = plt.figure()
+        # ax = fig.add_subplot(1, 1, 1)
+        # ax.plot(snr1)
+        # # Plot the noisy signal and the segmental SNRs from the 4 methods. Let the x-axis denote frames and y-axis denote the SNR in dB
+        # # plt.legend('avg segmental SNR = %.2f' % torch.mean(snr1))
+        # ax.set_title("model segmental SNR")
+        # ax.set_xlabel("frame")
+        # ax.set_ylabel("dB")
+        # # ax.axhline(y=torch.mean(snr1),linestyle = '--', label='avg')
+        # # ax.legend()
+        #
+        # fig.show()
 
+# parser.add_argument('--audio_dir', type=str, required=True, help='Directory containing audio files to denoise')
 if __name__ == "__main__":
     main()

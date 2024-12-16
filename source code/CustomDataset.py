@@ -1,12 +1,12 @@
 import torch
 import os
 import librosa
-import numpy as np
+from util import NUM_CHANNELS, PI, WAV
 
 class CustomDataset(torch.utils.data.Dataset):
     def __init__(self, samplesDir, labelsDir, samp_num=None):
         self.separator1 = '_'
-        self.suffix = '.ogg'
+        self.suffix = WAV
         self.separator2 = '__'
         self.fs = None
         self.sampDir = samplesDir
@@ -18,19 +18,24 @@ class CustomDataset(torch.utils.data.Dataset):
         self.frames_num = 128
         self.frames = None
 
-        #         keep track of file paths
-        for s in os.listdir(self.sampDir):
-            #             e.g. 'Rooster'
-            # label_class = s[:s.find(self.separator)]
-            #             e.g. '1-26806-A.ogg'
-            label_name = s[s.find(self.separator1) + 1:s.rfind(self.separator2)]
-            #             e.g. 'denoising2/denoising2/Rooster_test/1-26806-A.ogg'
-            label_path = os.path.join(self.labelsDir, label_name + self.suffix)
+        # Loop through the augmented directories
+        for folder in os.listdir(self.sampDir):
+            folder_path = os.path.join(self.sampDir, folder)
 
-            sample_path = os.path.join(self.sampDir, s)
-            self.samples.append(sample_path)
-            self.labels.append(label_path)
-        # take 100 random samples
+            # Only process directories
+            if os.path.isdir(folder_path):
+                for file in os.listdir(folder_path):
+                    if file.endswith(self.suffix):  # Ensure it's a .wav file
+                        sample_path = os.path.join(folder_path, file)
+
+                        # Get the original file name (without _index suffix)
+                        label_name = file.split('_')[0]
+                        label_path = os.path.join(self.labelsDir, label_name + self.suffix)
+
+                        self.samples.append(sample_path)
+                        self.labels.append(label_path)
+
+        # Take a random subset of the samples if specified
         if self.len is not None:
             inds = torch.randint(len(self.samples), (self.len,))
             self.samples = [self.samples[ind] for ind in inds]
@@ -45,42 +50,35 @@ class CustomDataset(torch.utils.data.Dataset):
 
     def __len__(self):
         return self.len if self.len is not None else \
-            sum(len(files) for _, _, files in os.walk(self.sampDir))
+            len(self.samples)
 
     def _prepareSample(self, data):
         """
-        convert to 12-channel STFT input
+        Convert to 12-channel STFT input
         """
         tens = torch.Tensor(data)
         stftData = torch.view_as_real(torch.stft(tens, n_fft=self.n_fft,
                                                  window=torch.hamming_window(self.n_fft), return_complex=True))
-        # choose random frames from sample
+        # Choose random frames from sample
         self.frames = torch.randint(stftData.size(dim=1), (self.frames_num,))
-        # add frames for power of two number
-        # toConcat = np.int_(2**(np.ceil(np.log2(stftData.size(dim=1)))) - stftData.size(dim=1))
-        # extraFrames = torch.zeros(stftData.size(dim=0),toConcat,stftData.size(dim=2))
         stftData = stftData[:, self.frames, :]
-        # stftData = torch.cat((stftData,extraFrames),1)
-        freqVect = np.arange(self.n_fft / 2 + 1) * self.fs / self.n_fft
-        numChannels = 12
-        # newTens.shape = (channels,frames,freq)
-        newTens = torch.zeros([numChannels, stftData.shape[1], stftData.shape[0]])
+        freqVect = torch.arange(0, self.n_fft // 2 + 1) * (self.fs / self.n_fft)
+
+        newTens = torch.zeros([NUM_CHANNELS, stftData.shape[1], stftData.shape[0]])
         newTens[:2, :, :] = stftData.permute(*torch.arange(stftData.ndim - 1, -1, -1))
-        posEmbeds = torch.FloatTensor([[np.cos(2 ** i * np.pi * f / self.fs) for i in range(10)]
+        posEmbeds = torch.FloatTensor([[torch.cos(2 ** i * PI * f / self.fs) for i in range(10)]
                                        for f in freqVect])
         fullSize = posEmbeds.T.unsqueeze(1).repeat(1, stftData.shape[1], 1)
         newTens[2:, :, :] = fullSize
-        #         need 1024 bins
         return newTens[:, :, :-1]
 
     def _prepareLabel(self, data):
         """
-        convert to 12-channel STFT input
+        Convert to 12-channel STFT input
         """
-        toMono = np.sum(data, axis=1) if data.ndim > 1 else data
+        toMono = torch.sum(data, dim=1) if data.ndim > 1 else data
         tens = torch.Tensor(toMono)
         stftData = torch.view_as_real(torch.stft(tens, n_fft=self.n_fft,
                                                  window=torch.hamming_window(self.n_fft), return_complex=True))
         stftData = stftData.permute(*torch.arange(stftData.ndim - 1, -1, -1))
         return stftData[:, self.frames, :-1]
-
