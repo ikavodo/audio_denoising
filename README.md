@@ -1,12 +1,12 @@
 # Denoise Network
 
-This repository implements a denoising neural network for audio processing. The system includes functionality for augmenting audio data of choice (See the [ESC-50](https://github.com/karolpiczak/ESC-50) environmental noise dataset submodule), training one of two UNet architectures, and evaluating the denoising performance.
+This repository implements a denoising neural network for audio processing. The system includes functionality for augmenting audio data of choice (See the [ESC-50](https://github.com/karolpiczak/ESC-50) environmental noise dataset submodule as an example for environmental sound recording), training one of two UNet architectures, and then using the trained model to denoise another audio file of choice.
 
 ---
 
 ## Setup
 
-You need Python 3.x, PyTorch, NumPy and Librosa installed.
+You need Python 3.x, PyTorch and Librosa installed.
 
 ---
 
@@ -14,25 +14,26 @@ You need Python 3.x, PyTorch, NumPy and Librosa installed.
 
 ### **1. Augment Audio Data**
 
-To augment audio files located in a directory (e.g., `ESC-50/audio/`), use the following command from inside the source code directory:
+To augment audio files located in a directory (e.g., `ESC-50/audio/`) for training, use the following command from inside the source code directory:
 
 ```bash
-python augmentation.py --audio_dir ./ESC-50/audio/ --output_dir ./ESC-50/augmented/ --N 5 --noise_path ./background_noise.wav
+python augmentation.py --audio_dir ./ESC-50/audio/ --output_dir ./ESC-50/augmented/ --N 5 --noise_dir ./noise_dir
 ```
+where noise_dir would be a directory with some noises you would want to get rid of in your target audio files (pink noise f.e.).
 
 #### Arguments:
 - `--audio_dir`: Directory containing the original audio files.
 - `--output_dir`: Directory where augmented data will be saved.
 - `--N`: Number of augmented versions to generate for each file.
-- `--noise_path`: Optional path to a background noise file to be used in augmentation.
+- `--noise_dir`: Optional path to a directory with noise files to be used in augmentation.
 
-The augmentation script will generate directories for each file in `audio_dir` and populate them with augmented versions.
+The augmentation script will generate directories for each file in `audio_dir` and populate them with augmented versions of the original file.
 
 ---
 
 ### **2. Train the Model**
 
-To train the denoising network, use the `train.py` script. Specify the paths to the training and test datasets and indicate whether to train the small or large model:
+To train the denoising network, use the `train.py` script. You will need to divide your samples into training and test datasets (75% train 25% test is a good baseline). Specify the paths to these datasets and indicate whether to train the smaller or larger model:
 
 ```bash
 python train.py --train_dir ./ESC-50/augmented/ --test_dir ./ESC-50/audio/ --train_labels ./ESC-50/train_labels/ --test_labels ./ESC-50/test_labels/ --model_type small
