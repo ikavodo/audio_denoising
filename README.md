@@ -1,6 +1,6 @@
 # Denoise Network
 
-This repository implements a denoising neural network for audio processing. The system includes functionality for augmenting audio data of choice (See the [ESC-50](https://github.com/karolpiczak/ESC-50) environmental noise dataset submodule as an example for environmental sound recording), training one of two UNet architectures, and then using the trained model to denoise another audio file of choice.
+This repository contains a PyTorch-based implementation of a denoising neural network for audio processing, based on the architecture proposed [here](https://arxiv.org/abs/2202.08702)[1]. The system includes functionality for augmenting audio data of choice (See the [ESC-50](https://github.com/karolpiczak/ESC-50) environmental noise dataset submodule as an example for environmental sound recording), training one of two UNet architectures, and then using the trained model to denoise another audio file of choice.
 
 ---
 
@@ -73,4 +73,6 @@ The script will denoise all files in the specified directory and save them with 
 2. **Visualization**: The `train.py` script also provides an option to visualize training and testing losses. Check the script for details.
 
 ---
+
+[1] Eloi Moliner, & Vesa Välimäki. (2022). A Two-Stage U-Net for High-Fidelity Denoising of Historical Recordings.
 
